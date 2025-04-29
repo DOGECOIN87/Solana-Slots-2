@@ -1,0 +1,82 @@
+{
+  "provider": "openai",
+  "model": "gpt-4o",
+  "temperature": 0.2,
+  "tools": [
+    {
+      "name": "create_wireframe",
+      "description": "Create wireframe designs for the slot machine UI",
+      "parameters": {
+        "viewportType": {
+          "type": "string",
+          "enum": ["desktop", "mobile", "tablet"],
+          "description": "The device viewport to design for"
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of components to include in the wireframe"
+        }
+      }
+    },
+    {
+      "name": "export_design",
+      "description": "Export design assets from Figma",
+      "parameters": {
+        "format": {
+          "type": "string",
+          "enum": ["png", "svg", "pdf"],
+          "description": "Export format"
+        },
+        "scale": {
+          "type": "number",
+          "description": "Export scale factor (1x, 2x, etc.)"
+        }
+      }
+    },
+    {
+      "name": "generate_component",
+      "description": "Generate a specific UI component design",
+      "parameters": {
+        "component": {
+          "type": "string",
+          "description": "The component to design"
+        },
+        "style": {
+          "type": "object",
+          "properties": {
+            "colorScheme": {
+              "type": "string",
+              "enum": ["primary", "secondary", "accent"]
+            },
+            "size": {
+              "type": "string",
+              "enum": ["small", "medium", "large"]
+            }
+          },
+          "description": "Style parameters for the component"
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "color-palette",
+      "description": "Solana Slots color palette (bg: #0D182C, bg-alt: #15263E, primary: #00E3FF, purple: #9945FF, green: #14F195, orange: #FF8A3D, yellow: #FFC272)"
+    },
+    {
+      "uri": "typography",
+      "description": "Typography system using Inter Variable font with 1.25 rem major-third scale"
+    },
+    {
+      "uri": "background-assets",
+      "description": "Background images for desktop and mobile"
+    },
+    {
+      "uri": "game-symbols",
+      "description": "Slot machine game symbols and animation assets"
+    }
+  ]
+}

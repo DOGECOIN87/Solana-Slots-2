@@ -1,0 +1,93 @@
+{
+  "$schema": "https://example.com/mcp.schema.json",
+  "provider": "openai",
+  "model": "gpt-4o",
+  "temperature": 0.1,
+  "tools": [
+    {
+      "name": "analyze_code",
+      "description": "Analyze code for issues, bugs, or improvement opportunities",
+      "parameters": {
+        "path": {
+          "type": "string",
+          "description": "Path to the file to analyze"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["security", "performance", "maintainability", "readability", "all"]
+          },
+          "description": "Types of issues to look for"
+        }
+      }
+    },
+    {
+      "name": "suggest_fix",
+      "description": "Suggest a fix for a code issue",
+      "parameters": {
+        "issue": {
+          "type": "string",
+          "description": "Description of the issue to fix"
+        },
+        "context": {
+          "type": "string",
+          "description": "Relevant code context"
+        }
+      }
+    },
+    {
+      "name": "review_pr",
+      "description": "Review a pull request",
+      "parameters": {
+        "diff": {
+          "type": "string",
+          "description": "The PR diff to review"
+        },
+        "checkType": {
+          "type": "string",
+          "enum": ["full", "security-only", "performance-only"],
+          "description": "Type of review to perform"
+        }
+      }
+    },
+    {
+      "name": "check_anchor_program",
+      "description": "Check Anchor program code for issues specific to Solana development",
+      "parameters": {
+        "path": {
+          "type": "string",
+          "description": "Path to the Anchor program file"
+        }
+      }
+    },
+    {
+      "name": "check_vrf_implementation",
+      "description": "Check the VRF implementation for correctness and security",
+      "parameters": {
+        "path": {
+          "type": "string",
+          "description": "Path to the VRF implementation file"
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "solana-security-best-practices",
+      "description": "Security best practices for Solana development"
+    },
+    {
+      "uri": "anchor-patterns",
+      "description": "Common patterns and anti-patterns in Anchor development"
+    },
+    {
+      "uri": "vrf-implementation-guide",
+      "description": "Guide to properly implementing VRF in Solana programs"
+    },
+    {
+      "uri": "frontend-best-practices",
+      "description": "Best practices for React frontend development with wallet integration"
+    }
+  ]
+}

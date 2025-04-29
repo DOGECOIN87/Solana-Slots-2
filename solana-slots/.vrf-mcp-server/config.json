@@ -1,0 +1,127 @@
+{
+  "$schema": "https://example.com/mcp.schema.json",
+  "provider": "custom",
+  "model": "switchboard-vrf-tools",
+  "temperature": 0,
+  "tools": [
+    {
+      "name": "create_vrf_account",
+      "description": "Create a new VRF account for randomness",
+      "parameters": {
+        "keypair": {
+          "type": "string",
+          "description": "Path to the keypair file for the payer"
+        },
+        "programAuthority": {
+          "type": "string",
+          "description": "The program authority's public key"
+        },
+        "network": {
+          "type": "string",
+          "enum": ["devnet", "testnet", "mainnet-beta"],
+          "description": "Solana network to use"
+        }
+      }
+    },
+    {
+      "name": "request_randomness",
+      "description": "Request randomness from a VRF account",
+      "parameters": {
+        "vrfAccount": {
+          "type": "string",
+          "description": "The VRF account's public key"
+        },
+        "payer": {
+          "type": "string",
+          "description": "Path to the keypair file for the payer"
+        },
+        "callback": {
+          "type": "string",
+          "description": "Callback function name to process the randomness"
+        }
+      }
+    },
+    {
+      "name": "verify_vrf_proof",
+      "description": "Verify a VRF proof",
+      "parameters": {
+        "vrfAccount": {
+          "type": "string",
+          "description": "The VRF account's public key"
+        },
+        "result": {
+          "type": "string",
+          "description": "The randomness result to verify"
+        }
+      }
+    },
+    {
+      "name": "simulate_slot_outcomes",
+      "description": "Simulate slot outcomes using VRF randomness",
+      "parameters": {
+        "randomness": {
+          "type": "string",
+          "description": "The randomness bytes from VRF"
+        },
+        "slotConfig": {
+          "type": "object",
+          "properties": {
+            "reels": {
+              "type": "integer",
+              "description": "Number of reels in the slot machine"
+            },
+            "rows": {
+              "type": "integer",
+              "description": "Number of visible rows in the slot machine"
+            },
+            "symbolCount": {
+              "type": "integer",
+              "description": "Number of different symbols available"
+            }
+          },
+          "description": "Configuration for the slot machine"
+        }
+      }
+    },
+    {
+      "name": "generate_anchor_vrf_program",
+      "description": "Generate starter Anchor program code for VRF integration",
+      "parameters": {
+        "programName": {
+          "type": "string",
+          "description": "Name of the program"
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["basic", "with-payout", "with-history", "full"]
+          },
+          "description": "Features to include in the generated code"
+        },
+        "outputPath": {
+          "type": "string",
+          "description": "Where to output the generated code"
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "switchboard-v3-vrf-docs",
+      "description": "Documentation for Switchboard V3 VRF"
+    },
+    {
+      "uri": "solana-slots-rules",
+      "description": "Game rules and payout configuration for Solana Slots"
+    },
+    {
+      "uri": "anchor-vrf-examples",
+      "description": "Example Anchor programs using Switchboard VRF"
+    },
+    {
+      "uri": "rng-testing-utilities",
+      "description": "Utilities for testing randomness generation and fairness"
+    }
+  ]
+}

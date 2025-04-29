@@ -1,0 +1,103 @@
+{
+  "$schema": "https://example.com/mcp.schema.json",
+  "provider": "upstash",
+  "model": "context7",
+  "temperature": 0,
+  "tools": [
+    {
+      "name": "index_repository",
+      "description": "Index the repository to build a context database for the Solana Slots project",
+      "parameters": {
+        "path": {
+          "type": "string",
+          "description": "Path to index (defaults to project root)"
+        },
+        "exclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Patterns to exclude (e.g. node_modules, .git)"
+        }
+      }
+    },
+    {
+      "name": "get_code_context",
+      "description": "Get context about a specific part of the codebase",
+      "parameters": {
+        "query": {
+          "type": "string",
+          "description": "Natural language query about the codebase"
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Optional list of files to focus on"
+        }
+      }
+    },
+    {
+      "name": "find_relevant_files",
+      "description": "Find files relevant to a particular topic or feature",
+      "parameters": {
+        "topic": {
+          "type": "string",
+          "description": "Topic or feature to find relevant files for"
+        },
+        "limit": {
+          "type": "integer",
+          "description": "Maximum number of files to return"
+        }
+      }
+    },
+    {
+      "name": "get_dependency_graph",
+      "description": "Generate a dependency graph for specified files or modules",
+      "parameters": {
+        "entrypoint": {
+          "type": "string",
+          "description": "Entry point file to start from"
+        },
+        "depth": {
+          "type": "integer",
+          "description": "How many levels of dependencies to traverse"
+        }
+      }
+    },
+    {
+      "name": "get_semantic_search",
+      "description": "Perform semantic search across the codebase",
+      "parameters": {
+        "query": {
+          "type": "string",
+          "description": "Natural language query"
+        },
+        "scope": {
+          "type": "string",
+          "enum": ["frontend", "backend", "all"],
+          "description": "Scope of the search"
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "code-index",
+      "description": "Indexed representation of the Solana Slots codebase"
+    },
+    {
+      "uri": "project-structure",
+      "description": "Information about the project structure and organization"
+    },
+    {
+      "uri": "context-history",
+      "description": "Historical context from previous sessions"
+    },
+    {
+      "uri": "tech-stack",
+      "description": "Information about the project's technical stack (Solana, Anchor, React, etc.)"
+    }
+  ]
+}

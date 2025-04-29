@@ -1,0 +1,157 @@
+
+Build a **provably-fair** 5×3 slots game on the Solana blockchain.  
+The assistant must scaffold, document, test, design, containerise, and continuously self-improve the project while obeying the guard-rails below.
+
+---
+
+## 0 PURPOSE & SCOPE  
+* Deliver a production-grade web dApp (“Solana Slots”) that:  
+  1. Shows a responsive 5×3 slot-machine UI.  
+  2. Uses **Switchboard v3 VRF** for random, verifiable spins.  
+  3. Records wagers, payouts, and VRF proofs on-chain.  
+  4. Pays winners in SOL (testnet by default).  
+  5. Ships with CI/CD, Storybook, a11y, Lighthouse, and security scanning.
+
+---
+
+## 1 PREREQUISITES (assistant must verify)  
+```bash
+node --version    # ≥ 18.20  
+pnpm --version    # ≥ 8  
+anchor --version  # ≥ 0.30  
+solana --version  # ≥ 1.18  
+docker --version  # for local validator & CI  
+
+2 ONE-COMMAND BOOTSTRAP (assistant executes)
+
+APP="solana-slots"
+mkdir -p "$APP" && cd "$APP"
+# ↓ Assistant runs everything below this line
+
+    Backend (Anchor)
+
+anchor init programs/solana_slots_vrf --javascript
+cd programs/solana_slots_vrf
+pnpm add @switchboard-xyz/anchor @switchboard-xyz/vrf
+
+Frontend (../frontend/)
+
+pnpm create vite frontend -- --template react-ts
+cd frontend
+pnpm add @solana/web3.js @project-serum/anchor @switchboard-xyz/vrf \
+         @solana/wallet-adapter-react @solana/wallet-adapter-wallets \
+         tailwindcss postcss autoprefixer clsx zustand
+npx tailwindcss init -p
+
+Monorepo config (pnpm-workspace.yaml)
+
+    packages:
+      - "programs/*"
+      - "frontend"
+
+    CI (.github/workflows/ci.yml) — lint, test, a11y, LHCI, Anchor tests.
+
+3 DIRECTORY STRUCTURE
+
+programs/solana_slots_vrf/     # Anchor on-chain program
+frontend/                      # React + Vite client
+scripts/                       # deployment helpers
+docs/                          # Docusaurus
+memory-bank/                   # persistent AI context
+src/assets/                    # game symbols & backgrounds
+  └─ images/
+     ├─ backgrounds/
+     │   ├─ desktop/official-bg@2x.png
+     │   └─ mobile/official-bg@2x.png
+     └─ symbols/*.png
+
+4 DESIGN SYSTEM
+
+    Color palette (derived from official background):
+
+    Token	Hex
+    --color-bg	#0D182C
+    --color-bg-alt	#15263E
+    --color-primary	#00E3FF
+    --color-purple	#9945FF
+    --color-green	#14F195
+    --color-orange	#FF8A3D
+    --color-yellow	#FFC272
+
+    Tailwind config must expose these as CSS variables and enable dark-mode.
+
+    Typography: Inter Variable, 1.25 rem major-third scale.
+
+5 GAME RULES & LOGIC
+
+    Reels: 5 columns × 3 rows, weighted symbol distribution loaded from src/assets/symbols/weights.json.
+
+    Payout table & winning patterns in frontend/src/game/rules.ts.
+
+    Quick-bet presets (1 ×, 5 ×, 10 ×) and custom wager.
+
+    All spin results come from on-chain VRF callback.
+
+6 VRF INTEGRATION (STEP SUMMARY)
+
+    Create a programAuthority PDA inside the Anchor program.
+
+    Instantiate a Switchboard VRF account with that PDA as authority, and set a callback to consume_randomness.
+
+    Expose request_spin instruction:
+
+        verifies wager, requests VRF.
+
+    Callback consume_randomness:
+
+        derives final reel indexes, stores outcome, emits SpinResult event.
+
+    Front-end listener subscribes to SpinResult and animates reels.
+
+    Provide a Script (scripts/init-vrf.ts) to fund and create VRF accounts on devnet/testnet.
+    Web3 Infrastructure for Everyone
+
+7 TESTS
+
+    Anchor: unit tests for request_spin, consume_randomness, edge cases (insufficient funds, replay).
+
+    Vitest: front-end state machine, weighted distribution, payout math.
+
+    axe-playwright: a11y.
+
+    LHCI: budgets — TTI ≤ 3 s, JS ≤ 250 kB.
+
+8 CI/CD
+
+    GitHub Actions steps: lint → unit tests → a11y → LHCI → build.
+
+    Auto-deploy preview to Netlify/Vercel on PR open.
+
+    Release via semantic-release when main passes.
+
+9 DEFINITION OF DONE
+
+    End-to-end spin flow passes on devnet with VRF proof.
+
+    Lighthouse ≥ 90 desktop & mobile.
+
+    80 % unit-test coverage.
+
+    Storybook stories for all reusable components.
+
+    No ESLint/Prettier errors; pnpm run type-check clean.
+
+10 ASSISTANT NEXT STEPS
+
+    Parse this brief into PLANNING.md.
+
+    Scaffold back-end & front-end code plus Storybook.
+
+    Generate initial Figma wireframes (desktop + mobile) using provided assets.
+
+    Commit via Conventional Commits; open PR for Code-Review agent.
+
+    Iterate until Definition of Done met.
+
+:contentReference[oaicite:1]{index=1}
+::contentReference[oaicite:2]{index=2}

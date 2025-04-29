@@ -1,0 +1,42 @@
+{
+  "$schema": "https://example.com/mcp.schema.json",
+  "provider": "openai",
+  "model": "gpt-4o",
+  "temperature": 0.3,
+  "tools": [
+    {
+      "name": "search",
+      "description": "Search for information about Solana, Anchor, VRF, and blockchain technologies",
+      "parameters": {
+        "query": {
+          "type": "string",
+          "description": "The search query"
+        }
+      }
+    },
+    {
+      "name": "get_documentation",
+      "description": "Fetch documentation for specific Solana, Anchor, or Switchboard VRF topics",
+      "parameters": {
+        "topic": {
+          "type": "string",
+          "description": "The topic to get documentation for"
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "solana-docs",
+      "description": "Solana developer documentation"
+    },
+    {
+      "uri": "anchor-docs",
+      "description": "Anchor framework documentation"
+    },
+    {
+      "uri": "switchboard-vrf-docs",
+      "description": "Switchboard VRF documentation"
+    }
+  ]
+}

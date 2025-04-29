@@ -1,0 +1,349 @@
+📜 OFFICIAL MASTER PROMPT — Q2 2025 (Rev‑D, UI/UX + Perf edition)
+
+Copy‑paste this entire file into your AI‑coding assistant (e.g. VS Code Cline ⇧⌘K) after you cd into a fresh repo.   It scaffolds, documents, tests, designs, containerises and continuously self‑improves your project while obeying strict guard‑rails.
+
+0 PURPOSE & SCOPE
+
+Build a production‑grade front‑, back‑ or full‑stack web‑app using a multi‑agent tool‑chain (Context7 ▷ Research ▷ Figma ▷ Code‑Review) plus automated CI/CD, testing, docs, containers, security scanning and pixel‑perfect, performant UI/UX design.   Works out‑of‑the‑box on any dev box or CI runner.
+
+0‑A 🚦 GOLDEN RULES (v6)
+
+Markdown is source‑of‑truth — keep README.md, PLANNING.md, TASK.md, CHANGELOG.md current.
+
+≤ 500 LOC per file — when a file approaches the limit refactor into modules.
+
+One task per message — atomic prompts → consistent output.
+
+Restart chats early — long threads degrade answers; summarise → reopen.
+
+Test early, test often — each new function/class mandates unit tests.
+
+Be specific — concrete examples + constraints beat abstractions.
+
+Document as you code — inline comments, docstrings, ADRs.
+
+Guard secrets — never hard‑code; use .env / cloud KMS; git add -n before commit.
+
+Performance budgets — Lighthouse ≥ 90 & JS bundle ≤ 250 kB; fail CI if breached.
+
+0‑B 🧑‍💻 Prompt Hygiene (assistant must enforce)
+
+On follow‑up requests reject or re‑scope if user bundles > 1 unrelated change.
+
+If context is missing attempt, in order: use context7 → ask research: → use figma → ask code‑review: → ask human.
+
+1 PREREQUISITES
+
+node --version    # ≥ 18.19 (JS/TS)
+pnpm --version    # preferred; else npm v10+
+python --version  # ≥ 3.12   (Python)
+docker --version  # for containers / MCPs
+
+2 ONE‑COMMAND BOOTSTRAP
+
+APP="my-awesome-app"
+mkdir -p "$APP" && cd "$APP"
+# Paste everything BELOW this line into your AI console
+
+(Assistant executes everything after this line.)
+
+3 DIRECTORY STRUCTURE
+
+mkdir -p src tests docs docs/adr memory-bank scripts \
+         .clinerules .assistant .husky .github/workflows \
+         .github/ISSUE_TEMPLATE .vscode .research-agent \
+         .figma-agent .code-review-agent infra k8s migrations
+
+Folder
+
+Purpose
+
+src/
+
+Application source
+
+tests/
+
+PyTest / Vitest suites mirroring src/
+
+docs/
+
+Docs site (Docusaurus / MkDocs); ADRs in docs/adr/
+
+memory-bank/
+
+Persistent AI context (re‑ingested each new chat)
+
+infra/
+
+Dockerfile, docker‑compose, Terraform / Helm
+
+migrations/
+
+Version‑controlled DB schema migrations
+
+.clinerules/
+
+Project‑specific assistant rules
+
+.assistant/
+
+Autonomy & safety rules
+
+.research-agent/, .figma-agent/, .code-review-agent/
+
+MCP configs
+
+.vscode/
+
+Workspace settings & extensions
+
+Modularity Rule — No single source file may exceed 500 LOC. Assistant must refactor proactively.
+
+4 CORE ROOT FILES
+
+README.md  PLANNING.md  TASK.md  CHANGELOG.md  CODE_OF_CONDUCT.md
+.editorconfig  .gitattributes  .gitignore  .clineignore
+.eslintrc.json  .prettierrc  commitlint.config.js
+.vscode/settings.json  .vscode/extensions.json
+.github/PULL_REQUEST_TEMPLATE.md
+.github/ISSUE_TEMPLATE/{bug,feature}.yml
+.github/dependabot.yml
+infra/Dockerfile  docker-compose.yml
+.env.example  manifest.webmanifest
+research-agent/config.json  figma-agent/config.json  code-review-agent/config.json
+storybooks/main.ts  storybooks/preview.ts
+
+5 INITIALISE PACKAGE & DEV DEPS (JS/TS stack)
+
+pnpm init -y
+pnpm add -D typescript @types/node vitest ts-node eslint prettier \
+  @typescript-eslint/{parser,eslint-plugin} eslint-plugin-prettier eslint-config-prettier \
+  husky lint-staged @commitlint/{cli,config-conventional} \
+  semantic-release @semantic-release/{git,changelog} \
+  codecov coverage-lcov dependabot-vulnerability-alerts \
+  lighthouse-ci @axe-core/playwright storybook @storybook/addon-essentials \
+  webpack-bundle-analyzer @storybook/testing-library
+
+npx husky install
+npx husky add .husky/commit-msg  'npx --no -- commitlint --edit "$1"'
+npx husky add .husky/pre-push   'pnpm run lint && pnpm run test && pnpm run a11y && pnpm run lhci'
+
+Add to package.json:
+
+"scripts": {
+  "dev": "vite dev",
+  "build": "vite build",
+  "lint": "eslint \"{src,tests}/**/*.{ts,tsx}\"",
+  "test": "vitest run",
+  "coverage": "vitest run --coverage",
+  "a11y": "playwright test --config=axe.config.ts",
+  "lhci": "lhci autorun --upload.target=temporary-public-storage",
+  "storybook": "storybook dev -p 6006",
+  "build-storybook": "storybook build",
+  "release": "semantic-release"
+},
+"lint-staged": { "*.ts?(x)": "eslint --cache --fix" }
+
+5-P If Python stack detected
+
+pip install --upgrade pip
+
+pip install black pytest pydantic fastapi uvicorn bandit alembic
+
+Add pre‑commit hook: black --check --diff and bandit -r src
+
+Assistant must follow PEP8, use type hints, Google‑style docstrings & pydantic.
+
+Initialise DB migrations: alembic init migrations.
+
+6 PROJECT RULES (.clinerules/)
+
+File
+
+Purpose
+
+01-guidelines.md
+
+Naming, architecture, commit style
+
+02-code-structure.md
+
+500‑LOC limit, modular refactor patterns
+
+03-testing.md
+
+For each unit: 1 happy + 1 edge + 1 failure + automated a11y check
+
+04-ai-behaviour.md
+
+No hallucinated libs, confirm paths, ask when unsure
+
+05-security.md
+
+Secrets scanning, cloud KMS usage, SBOM, input validation
+
+06-multi-agent.md
+
+Invocation rules (Context7 → Research → Figma → Code‑Review)
+
+07-design-agent.md
+
+Figma specs, pixel grid, typography scale, Storybook integration
+
+7 AUTONOMY SAFEGUARDS
+
+Filesystem — write only inside repo; never /etc, $HOME/.ssh.
+
+Network — external calls solely via approved MCP agents.
+
+Secrets — use .env and cloud KMS (AWS Secrets Manager, Vault). Assistant must never echo secret values.
+
+8 MULTI‑AGENT CONFIG SCHEMAS
+
+// .research-agent/config.json
+{
+  "$schema": "https://example.com/mcp.schema.json",
+  "provider": "openai",
+  "model": "gpt-4o",
+  "temperature": 0.3
+}
+
+(Create analogous files for Figma & Code‑Review agents.)
+
+9 MCP SERVERS & INSTALLATION LINKS
+
+Server
+
+Docs
+
+One‑liner install/test
+
+Context7
+
+https://github.com/upstash/context7
+
+npx context7-mcp --stdio
+
+Cursor MCP
+
+https://docs.cursor.com/context/model-context-protocol
+
+(Built‑in)
+
+Windsurf MCP
+
+https://docs.codeium.com/windsurf/mcp
+
+See docs
+
+Cline MCP
+
+https://docs.cline.bot/mcp-servers/mcp
+
+cline mcp install <url>
+
+Roo Code MCP
+
+https://docs.roocode.com/features/mcp/using-mcp
+
+See docs
+
+9‑A Git MCP Example
+
+ask git-mcp: "commit -m 'feat: initial scaffold'"
+
+10 TEST & QUALITY BOILERPLATE
+
+// tests/sanity.test.ts
+import { describe, expect, it } from 'vitest';
+
+describe('sanity', () => {
+  it('2 + 2 = 4', () => expect(2 + 2).toBe(4));
+});
+
+Accessibility regression tests run via axe‑playwright script defined in ** (**).
+
+11 CI/CD (GitHub Actions)
+
+name: CI
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions: { contents: read, security-events: write }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 18, cache: pnpm }
+      - run: corepack enable && pnpm install --frozen-lockfile
+      - run: pnpm run lint && pnpm run test -- --coverage
+      - run: pnpm run a11y
+      - run: pnpm run lhci
+      - uses: codecov/codecov-action@v4
+      - name: Upload SBOM/scan
+        uses: github/codeql-action/init@v3
+        with: { languages: javascript }
+      - uses: github/codeql-action/analyze@v3
+
+  release:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 18 }
+      - run: corepack enable && pnpm install --production=false
+      - run: pnpm run release
+
+12 CONTAINERS & K8s
+
+infra/Dockerfile and docker-compose.yml enable docker compose up --build.
+
+Provide a minimal Helm chart in k8s/ or Terraform under infra/terraform/.
+
+Expose a /healthz endpoint for readiness probes and include OpenTelemetry sidecar if OTEL_EXPORTER_OTLP_ENDPOINT defined.
+
+13 UI/UX DESIGN GUIDELINES & FIGMA MCP WORKFLOW
+
+(unchanged — see previous section content, now includes Storybook & PWA meta)
+
+PWA Meta: Assistant must generate manifest.webmanifest and add necessary meta tags (name, theme‑color, icons) when building a public web front‑end.
+
+Storybook: Every new reusable component created in src/components must have a Storybook story (*.stories.tsx) and appear in storybook dev.
+
+Additional Mistakes to Avoid
+
+Poor mobile viewport meta, blocking pinch‑zoom, or missing safe‑area insets.
+
+No skeleton loading states on slow networks.
+
+14 OBSERVABILITY STUBS
+
+Sentry: npm i @sentry/node or pip install sentry-sdk; Sentry.init({ dsn: process.env.SENTRY_DSN }).
+
+OpenTelemetry: Export OTLP traces to local collector.
+
+Analytics / Telemetry: If POSTHOG_API_KEY or GA_MEASUREMENT_ID exists in .env, auto‑integrate PostHog or Google Analytics with opt‑in consent banner.
+
+15 RELEASE AUTOMATION
+
+semantic-release bumps version, tags, changelog. Manual edits to CHANGELOG.md blocked by CI.
+
+16 ASSISTANT NEXT STEPS (auto‑execute)
+
+Parse PLANNING.md; confirm vision & constraints.
+
+Generate initial feature boilerplate in src/.
+
+Write unit tests (happy + edge + failure) in tests/.
+
+Produce initial UI wireframes with Figma agent → request human approval.
+
+Scaffold Storybook stories & PWA manifest.
+
+Update TASK.md; commit via Conventional Commits; open PR.
+
+Trigger Code‑Review agent; merge when CI passes.
