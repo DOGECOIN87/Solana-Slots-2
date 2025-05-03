@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Header from './components/Header';
 import SlotMachine from './components/SlotMachine';
+import SlotControls from './components/SlotControls';
 import Footer from './components/Footer';
 
 // Using basic React state since we can't use zustand without npm
@@ -51,7 +52,7 @@ function App() {
   const wagerOptions = [1, 5, 10];
 
   return (
-    <div className="flex flex-col min-h-screen bg-bg text-primary">
+    <div className="flex flex-col min-h-screen bg-bg text-primary bg-no-repeat bg-cover bg-center md:bg-[url('/assets/backgrounds/desktop.png')] bg-[url('/assets/backgrounds/mobile.png')]">
       <Header
         walletConnected={walletConnected}
         walletBalance={walletBalance}
@@ -59,8 +60,9 @@ function App() {
         onDisconnect={disconnectWallet}
       />
 
-      <main className="flex-1 container mx-auto py-4 px-2 md:px-4">
-        <div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-8">
+      <main className="flex-1 container mx-auto py-6 px-4">
+        {/* Vertical layout for all screen sizes */}
+        <div className="flex flex-col items-center justify-center">
           <SlotMachine
             isSpinning={isSpinning}
             onSpin={handleSpin}
